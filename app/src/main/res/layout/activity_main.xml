@@ -13,9 +13,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:gravity="center"
-        android:textSize="21sp"
+        android:inputType="number"
         android:maxLines="1"
         android:textColor="@android:color/white"
+        android:textSize="21sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,11 +29,13 @@
         android:gravity="end"
         android:maxLines="1"
         android:textSize="18sp"
+        android:inputType="number"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline3" />
+        app:layout_constraintTop_toTopOf="@+id/guideline3"
+        android:tag="11"/>
 
 
     <TextView

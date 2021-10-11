@@ -3,6 +3,7 @@ package com.lexshi.calculator
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.lexshi.calculator.databinding.ActivityMainBinding
 
@@ -10,66 +11,89 @@ import com.lexshi.calculator.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var numberFromScreen: Double = 0.0
+    private var firstNum: Double = 0.0
+    private var operation: String? = null
+    private var mathSign: Boolean = false
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        buttons()
+    }
 
-        //numbers
-        binding.tvOne.setOnClickListener{ if (binding.tvExpression.text.equals("0")) binding.tvExpression.text = "1" else binding.tvExpression.text = binding.tvExpression.text.toString()+"1"}
-        binding.tvTwo.setOnClickListener{ if (binding.tvExpression.text.equals("0")) binding.tvExpression.text = "2" else binding.tvExpression.text = binding.tvExpression.text.toString()+"2"}
-        binding.tvThree.setOnClickListener{ if (binding.tvExpression.text.equals("0")) binding.tvExpression.text = "3" else binding.tvExpression.text = binding.tvExpression.text.toString()+"3"}
-        binding.tvFour.setOnClickListener{ if (binding.tvExpression.text.equals("0")) binding.tvExpression.text = "4" else binding.tvExpression.text = binding.tvExpression.text.toString()+"4"}
-        binding.tvFive.setOnClickListener{ if (binding.tvExpression.text.equals("0")) binding.tvExpression.text = "5" else binding.tvExpression.text = binding.tvExpression.text.toString()+"5"}
-        binding.tvSix.setOnClickListener{ if (binding.tvExpression.text.equals("0")) binding.tvExpression.text = "6" else binding.tvExpression.text = binding.tvExpression.text.toString()+"6"}
-        binding.tvSeven.setOnClickListener{ if (binding.tvExpression.text.equals("0")) binding.tvExpression.text = "7" else binding.tvExpression.text = binding.tvExpression.text.toString()+"7"}
-        binding.tvEight.setOnClickListener{ if (binding.tvExpression.text.equals("0")) binding.tvExpression.text = "8" else binding.tvExpression.text = binding.tvExpression.text.toString()+"8"}
-        binding.tvEleven.setOnClickListener{ if (binding.tvExpression.text.equals("0")) binding.tvExpression.text = "9" else binding.tvExpression.text = binding.tvExpression.text.toString()+"9"}
-        binding.tvZero.setOnClickListener{ if (binding.tvExpression.text.equals("0")) binding.tvExpression.text = "0" else binding.tvExpression.text = binding.tvExpression.text.toString()+"0"}
-
+    private fun buttons() {
+        //digits
+        binding.tvOne.setOnClickListener {digitsClick(1)}
+        binding.tvTwo.setOnClickListener {digitsClick(2)}
+        binding.tvThree.setOnClickListener {digitsClick(3)}
+        binding.tvFour.setOnClickListener {digitsClick(4)}
+        binding.tvFive.setOnClickListener {digitsClick(5)}
+        binding.tvSix.setOnClickListener {digitsClick(6)}
+        binding.tvSeven.setOnClickListener {digitsClick(7)}
+        binding.tvEight.setOnClickListener {digitsClick(8)}
+        binding.tvEleven.setOnClickListener {digitsClick(9)}
+        binding.tvZero.setOnClickListener {digitsClick(0)}
 
         //actions
-        binding.tvPlus.setOnClickListener{
-            binding.tvResult.text = binding.tvResult.text.toString() + binding.tvExpression.text.toString()+"+"
-            binding.tvExpression.text = ""
+        binding.tvPlus.setOnClickListener {operationsClick("+")}
+        binding.tvMinus.setOnClickListener {operationsClick("-")}
+        binding.tvDivide.setOnClickListener {operationsClick("/")}
+        binding.tvMultiply.setOnClickListener {operationsClick("*")}
+        binding.tvOpen.setOnClickListener {}
+        binding.tvClose.setOnClickListener {}
+        binding.tvClear.setOnClickListener {clear()}
+        binding.tvEquals.setOnClickListener {equals()}
+    }
+
+    private fun clear() {
+        binding.tvExpression.text = ""
+        firstNum = 0.0
+        numberFromScreen = 0.0
+        operation = null
+    }
+
+    private fun equals(){
+        binding.tvExpression.text = when (operation) {
+            "/" -> (firstNum / numberFromScreen).toString()
+            "*" -> (firstNum * numberFromScreen).toString()
+            "+" -> (firstNum + numberFromScreen).toString()
+            "-" -> (firstNum - numberFromScreen).toString()
+            else -> ""
         }
-        binding.tvMinus.setOnClickListener{
-            binding.tvResult.text = binding.tvResult.text.toString() + binding.tvExpression.text.toString()+"-"
-            binding.tvExpression.text = ""
-        }
-        binding.tvDivide.setOnClickListener{
-            binding.tvResult.text = binding.tvResult.text.toString() + binding.tvExpression.text.toString()+"/"
-            binding.tvExpression.text = ""
-        }
-        binding.tvMultiply.setOnClickListener{
-            binding.tvResult.text = binding.tvResult.text.toString() + binding.tvExpression.text.toString()+"*"
-            binding.tvExpression.text = ""
-        }
-        binding.tvOpen.setOnClickListener{
-            binding.tvResult.text = binding.tvResult.text.toString() + binding.tvExpression.text.toString()+"("
-            binding.tvExpression.text = ""
-        }
-        binding.tvClose.setOnClickListener{
-            binding.tvResult.text = binding.tvResult.text.toString() + binding.tvExpression.text.toString()+")"
-            binding.tvExpression.text = ""
-        }
-        binding.tvClear.setOnClickListener{
-            binding.tvExpression.text = ""
-            binding.tvResult.text = ""
+    }
+
+    //Click to numbers
+    @SuppressLint("SetTextI18n")
+    private fun digitsClick(number: Int) {
+        if (mathSign == true) {
+            binding.tvExpression.text = number.toString()
+            mathSign = false
+        } else {
+            binding.tvExpression.text = binding.tvExpression.text.toString() + number.toString()
         }
 
+        numberFromScreen = (binding.tvExpression.text.toString()).toDouble()
+    }
 
-        binding.tvEquals.setOnClickListener {
-            val temp = binding.tvExpression.text.toString()
-            binding.tvResult.text = binding.tvResult.text.toString() + temp
-            binding.tvExpression.text = binding.tvResult.text.toString()
+    //Click to operations
+    private fun operationsClick(tag: String) {
+        if (binding.tvExpression.text.toString() != "") {
+            firstNum = numberFromScreen
+            when (tag) {
+                "/" -> binding.tvExpression.text = "/"
+                "*" -> binding.tvExpression.text = "*"
+                "+" -> binding.tvExpression.text = "+"
+                "-" -> binding.tvExpression.text = "-"
+            }
+            operation = tag
+            mathSign = true
 
+        } else{
+            Toast.makeText(this, "Пустая строка", Toast.LENGTH_SHORT).show()
         }
-
-
-
-
     }
 }
+
